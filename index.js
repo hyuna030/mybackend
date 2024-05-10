@@ -27,6 +27,7 @@ const storage = new Storage({
 const bucket = storage.bucket(process.env.FIREBASE_STORAGE_BUCKET);
 
 const app = express();
+const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
