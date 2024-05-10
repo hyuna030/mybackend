@@ -1,7 +1,7 @@
 {
     "headers": [
         {
-            "source": "/(.*)",
+            "source": "/api/(.*)",
             "headers": [
                 {
                     "key": "Access-Control-Allow-Credentials",
@@ -13,11 +13,11 @@
                 },
                 {
                     "key": "Access-Control-Allow-Methods",
-                    "value": "GET, OPTIONS, PATCH, DELETE, POST, PUT"
+                    "value": "GET, POST, OPTIONS, PUT, PATCH, DELETE"
                 },
                 {
                     "key": "Access-Control-Allow-Headers",
-                    "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+                    "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization"
                 }
             ]
         }
