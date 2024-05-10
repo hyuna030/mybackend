@@ -28,6 +28,12 @@ const bucket = storage.bucket(process.env.FIREBASE_STORAGE_BUCKET);
 
 const app = express(); f
 app.use(cors());
+
+app.options('*', (req, res) => {
+    res.sendStatus(200);
+});
+
+
 app.use(express.json());
 
 
