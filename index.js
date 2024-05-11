@@ -28,18 +28,6 @@ const bucket = storage.bucket(process.env.FIREBASE_STORAGE_BUCKET);
 
 const app = express();
 
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://flowe.netlify.app"); // 클라이언트의 도메인
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-    res.header("Access-Control-Allow-Credentials", "true");
-    if (req.method === "OPTIONS") {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
-});
-
 const corsOptions = {
     origin: 'https://flowe.netlify.app', // 정확한 클라이언트 도메인
     credentials: true, // credentials 허용
@@ -48,8 +36,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // 모든 경로에 대한 OPTIONS 요청을 허용
 
-app.options('*', cors(corsOptions));
 
 app.use(express.json());
 
