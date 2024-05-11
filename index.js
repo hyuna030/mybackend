@@ -29,7 +29,7 @@ const bucket = storage.bucket(process.env.FIREBASE_STORAGE_BUCKET);
 const app = express();
 
 app.use(
-    cors({ origin: "https://flowe.netlify.app/", credentials: true })
+    cors({ origin: "https://flowe.netlify.app", credentials: true })
 );
 
 app.use(express.json());
