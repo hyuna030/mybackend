@@ -17,7 +17,6 @@ admin.initializeApp({
     // 필요에 따라 다른 설정을 추가할 수 있습니다.
 });
 
-
 const db = admin.firestore();
 
 // Firebase Storage 설정
@@ -38,17 +37,13 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // 모든 경로에 대한 OPTIONS 요청을 허용
 
-
 app.use(express.json());
-
-
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
 import fetch from 'node-fetch'
-
 
 async function uploadImageToStorage(imageBuffer, description) {
     const timestamp = Date.now();
@@ -67,16 +62,11 @@ async function uploadImageToStorage(imageBuffer, description) {
 
 async function downloadImage(imageUrl) {
     const response = await fetch(imageUrl);
-    const arrayBuffer = await response.arrayBuffer(); // 변경된 부분
-    return Buffer.from(arrayBuffer); // Buffer 객체로 변환
+    const arrayBuffer = await response.arrayBuffer();
+    return Buffer.from(arrayBuffer);
 }
 
-
-// 생략된 import 및 초기 설정 코드 (변경 없음)
-
-// ... 기존 import 코드 유지
-
-// 변경 사항 포함한 전체 서버 코드
+// 이미지 생성 엔드포인트
 app.post('/generate-image', async (req, res) => {
     const { result, phoneNumber, moodAnswer } = req.body;
     const prompt = `Create an abstract image utilizing the colors of ${result} in pastel tones. The image should fill the entire screen with soft, harmonious colors, and the elements should be fluidly spread across the canvas, creating an expansive composition. ${moodAnswer}`;
@@ -117,6 +107,7 @@ app.post('/generate-image', async (req, res) => {
     }
 });
 
+// 일기 답장 생성 엔드포인트
 app.post('/generate-reply', async (req, res) => {
     try {
         const { diaryEntry } = req.body;
@@ -142,6 +133,7 @@ app.post('/generate-reply', async (req, res) => {
     }
 });
 
+// 식물 MBTI 생성 엔드포인트
 app.post('/generate-plant-mbti', async (req, res) => {
     try {
         const { plantType, plantName, wateringCycle, startDate } = req.body;
@@ -171,6 +163,7 @@ app.post('/generate-plant-mbti', async (req, res) => {
     }
 });
 
+// 이미지 분석 엔드포인트
 app.post('/generate-image-analysis', async (req, res) => {
     try {
         const { imageUrl } = req.body;
@@ -199,6 +192,7 @@ app.post('/generate-image-analysis', async (req, res) => {
     }
 });
 
+// 식물 건강 분석 엔드포인트
 app.post('/analyze-plant-health', async (req, res) => {
     try {
         const { image } = req.body;
@@ -220,4 +214,10 @@ app.post('/analyze-plant-health', async (req, res) => {
         console.error('Error:', error);
         res.status(500).json({ error: 'An error occurred during image analysis.' });
     }
+});
+
+// 서버 실행
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
 });
