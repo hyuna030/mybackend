@@ -136,30 +136,60 @@ app.post('/generate-reply', async (req, res) => {
 // 식물 MBTI 생성 엔드포인트
 app.post('/generate-plant-mbti', async (req, res) => {
     try {
+        console.log('Received plant MBTI request:', req.body); // 디버깅용 로그 추가
+
         const { plantType, plantName, wateringCycle, startDate } = req.body;
+
+        // 입력값 검증
+        if (!plantType || !plantName || !wateringCycle || !startDate) {
+            return res.status(400).json({
+                error: 'Missing required fields',
+                received: { plantType, plantName, wateringCycle, startDate }
+            });
+        }
+
         const prompt = `식물의 종류는 ${plantType}, 이름은 ${plantName}, 물주기 주기는 ${wateringCycle}일, 시작일은 ${startDate}입니다. 이 정보를 바탕으로 식물의 MBTI를 생성해주세요. 다른 텍스트 제외하고 오로지 mbti만 출력하세요.`;
+
+        console.log('Sending prompt to OpenAI:', prompt); // 프롬프트 확인용 로그
 
         const response = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
-                { role: "system", content: "답변은 영어 대문자 4글자로만 제공해주세요." },
+                { role: "system", content: "답변은 영어 대문자 4글자로만 제공해주세요. 예: ENFP, ISTJ 등" },
                 { role: "user", content: prompt }
             ],
             temperature: 0.5,
             max_tokens: 1500
         });
 
-        const fullTextResponse = response.choices?.[0]?.message?.content;
-        const mbtiMatch = fullTextResponse?.match(/[I|E][N|S][T|F][J|P]/);
+        console.log('OpenAI response:', response.choices?.[0]?.message?.content); // 응답 확인용 로그
 
-        if (mbtiMatch) {
+        const fullTextResponse = response.choices?.[0]?.message?.content;
+
+        if (!fullTextResponse) {
+            return res.status(500).json({ error: 'No response from OpenAI' });
+        }
+
+        // MBTI 패턴 매칭 개선
+        const mbtiMatch = fullTextResponse.match(/[IE][NS][TF][JP]/g);
+
+        if (mbtiMatch && mbtiMatch.length > 0) {
+            console.log('Extracted MBTI:', mbtiMatch[0]); // 추출된 MBTI 확인용 로그
             res.json({ plantMBTI: mbtiMatch[0] });
         } else {
-            res.status(500).json({ error: 'Failed to extract MBTI from the response' });
+            console.log('Failed to extract MBTI from response:', fullTextResponse);
+            return res.status(500).json({
+                error: 'Failed to extract MBTI from the response',
+                openaiResponse: fullTextResponse
+            });
         }
     } catch (error) {
         console.error('Error generating plant MBTI:', error);
-        res.status(500).json({ error: 'An error occurred while generating plant MBTI' });
+        console.error('Error details:', error.message, error.stack); // 더 자세한 에러 로그
+        res.status(500).json({
+            error: 'An error occurred while generating plant MBTI',
+            details: error.message
+        });
     }
 });
 
